@@ -188,6 +188,7 @@ Answer: We are making a map with the murder data, plotting the different murder 
 ### Problem 1: Load Data
 Read in the data
 ```{r}
+library(dplyr)
 nsduh <- read.csv("dat.nsduh.small.1.csv")
 nsduh.untouched <- nsduh
 names(nsduh)

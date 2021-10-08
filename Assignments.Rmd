@@ -14,6 +14,13 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
+```{r}
+library('maps') 
+library('ggplot2') 
+library('dplyr')
+library(datasets)
+```
+
 # Assignment 1
 
 **Collaborators: w/ Sophia Restaino **
@@ -166,9 +173,6 @@ In the console below (not in text), type `install.packages("maps")` and press En
 Run this code:
 
 ```{r, eval = FALSE, fig.width = 7.5, fig.height = 4}
-library('maps') 
-library('ggplot2') 
-
 ggplot(dat,
        aes(map_id=state, fill=Murder)) + 
        geom_map(map=map_data("state")) + 
@@ -178,3 +182,116 @@ ggplot(dat,
 What does this code do? Explain what each line is doing.
 
 Answer: We are making a map with the murder data, plotting the different murder rates across each state. The first line of this code is calling the maps package. The second line calls the ggplot2 package which allows you to make different kinds of graphs, similar to baseR plot functions. So, when making the map, "ggplot" is the function, "dat" is the dataset we are pulling information from, and "aes" is responsible for setting the aesthetics of the map we are making. "fill" is telling R that we want the aesthetics to be filled with the data from the "Murder" column. After this, the "+" tacks on the map that is actually being made, using the "state" data. After this, "expand_limits" helps us put the latitude and longitude ticks on the visualization, behind the map. 
+
+# Assignment 2
+
+### Problem 1: Load Data
+Read in the data
+```{r}
+nsduh <- read.csv("dat.nsduh.small.1.csv")
+nsduh.untouched <- nsduh
+names(nsduh)
+```
+
+Dimensions of the dataset
+```{r}
+dim(nsduh)
+```
+
+## Problem 2: Variables
+Describe the variables in the dataset.
+What is this dataset about? Who collected the data, what kind of sample is it, and what was the purpose of generating the data?
+
+This dataset is a survey collecting information on people's tendency/history of using marijuana, cigarettes, and alcohol. There are also some demographics/personal information collected, such as the respondent's age, sex, and sexual attraction. This information is all compiled by the National Survey on Drug Use and Health in order to analyze substance use across the nation. 
+
+## Problem 3: Age and gender
+What is the age distribution of the sample like? Make sure you read the codebook to know what the variable values mean.
+Do you think this age distribution representative of the US population? Why or why not?
+```{r}
+class(nsduh$age2)
+mean(nsduh$age2)
+median(nsduh$age2)
+hist(nsduh$age2,
+     main = "Histogram of Ages",
+     xlab = "Age Buckets",
+     ylab = "Frequency",
+     xlim = c(0,20))
+```
+
+According to this histogram, along with the information on the value meanings in the codebook, most of the respondents for this survey answered 15. This indicates that they are between 35-49 years old. This survey took people who were at least 12 years old, but compared to the other age buckets, younger people were not as represented. This makes sense, as the data was collected through a survey, so slightly older people were probably more likely to interact with it. I think this is somewhat reflective of the national population, but I would probably want a larger sample size just to be as accurate as possible. A quick google search shows that in 2019, the average age of a person was 38.1 years old. The average age of respondents in this survey was roughly between 26-29 years old. Thus, this information shows that the survey is slightly on the younger side and could use more respondents to be more reflective of the national population. 
+
+Is the sample balanced in terms of gender? If not, are there more females or males?
+```{r}
+nsduh %>%
+  count(irsex)
+```
+It is decently balanced. There are 91 males and 80 females. 
+
+Use this code to draw a stacked bar plot to view the relationship between sex and age. What can you conclude from this plot?
+```{r}
+tab.agesex <- table(nsduh$irsex, nsduh$age2)
+min(nsduh$age2)
+barplot(tab.agesex,
+        main = "Stacked barchart",
+        xlab = "Age category", ylab = "Frequency",
+        legend.text = rownames(tab.agesex),
+        beside = FALSE) # Stacked bars (default)
+```
+This barchart allows us to see the gender breakdown per age bucket in the survey. For example, we are able to see that for those who are in the "15" age bucket, the respondents are pretty evenly split between males and females. We are also able to see instances in which the age buckets are heavily dominated by female or male respondents. For the 17 and 18 year olds (buckets 6 nd 7), according to the graph, most respondents also reported that they are male. For the 19 year old respondents (bucket 8), many reported that they are female, rather than males. Overall, most of the age buckets are decently even between female and male respondents. 
+
+## Problem 4: Substance use
+For which of the three substances included in the dataset (marijuana, alcohol, and cigarettes) do individuals tend to use the substance earlier?
+```{r}
+sum(min(nsduh$mjage))
+sum(min(nsduh$cigage))
+sum(min(nsduh$iralcage))
+```
+Individuals tend to use alcohol at an earlier age than compared to when they would use marijuana or cigarettes. 
+
+## Problem 5: Sexual attraction
+What does the distribution of sexual attraction look like? Is this what you expected?
+```{r}
+nsduh$sexna <- nsduh$sexatract
+nsduh$sexna[nsduh$sexatract == 85 | nsduh$sexatract == 94 | nsduh$sexatract == 97 |
+            nsduh$sexatract == 98 | nsduh$sexatract == 99] <- NA 
+length(nsduh$sexna[nsduh$sexna == "NA"])
+hist(nsduh$sexna,
+     main = "Histogram of Sexual Attraction",
+     xlab = "Age Buckets",
+     ylab = "Frequency",
+     xlim = c(1,6))
+```
+First, I excluded people on the survey who skipped this question, did not answer, didn't know, or refused this question. I found that in this dataset, this only applied to 3 people, so I felt comfortable excluding them without much harm to the strength of the data. An overwhelming majority of the people who took this survey are straight, as in they are only attracted to people of the opposite sex. The second most popular response was that people are mostly attracted to people of the opposite sex. People who are bi was the next most common answer, followed by people who are mostly attracted to the same sex, and finally people who are only attracted to the same sex. The least common response was people who are not sure. This is what I expected, and I think this data is representative of the greater population. 
+
+What is the distribution of sexual attraction by gender? 
+```{r}
+tab.gensex <- table(nsduh$irsex, nsduh$sexna)
+barplot(tab.gensex,
+        main = "Stacked barchart",
+        xlab = "Sexual Attraction Category", ylab = "Frequency",
+        legend.text = rownames(tab.gensex),
+        beside = FALSE) # Stacked bars (default)
+```
+Most females and males who took the survey are straight. Women are more likely to report that they are mostly attracted to the opposite sex and are equally attracted to males and females than the other male respondents. 
+
+## Problem 6: English speaking
+What does the distribution of English speaking look like in the sample? Is this what you might expect for a random sample of the US population?
+```{r}
+speakengl <- nsduh$speakengl
+engl.freq <- table(speakengl)
+barplot(engl.freq,
+        ylim = c(0,200))
+```
+Most of the people who took the survey are able to speak english very well. This is followed by those who said they can speak english well, followed by those who said they can't speak english very well. This is not surprising as a random sample of the US because most people are able to speak english very well; however, there are people who can speak english, but not as their first language. This might cause their english to not be as strong, so it makes sense that the survey responses are reflective of this factor. 
+
+Are there more English speaker females or males?
+```{r}
+tab.genengl <- table(nsduh$speakengl, nsduh$irsex)
+barplot(tab.genengl,
+        main = "Stacked barchart",
+        xlab = "Age category", ylab = "Frequency",
+        legend.text = rownames(tab.genengl),
+        beside = FALSE,
+        ylim = c(0,100)) # Stacked bars (default)
+```
+There are more english speaking males. This might be caused by a few factors with one of the more obvious being that more males took the survey than females, so it makes sense that, in looking at pure frequency, they might have more people answer that they can speak english well. 

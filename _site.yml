@@ -8,6 +8,4 @@ navbar:
       href: Assignments.html
     - text: "Exams"
       href: Exams.html
-    - text: "Links"
-      href: Links.html
 output_dir: "docs"

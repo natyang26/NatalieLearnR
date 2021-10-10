@@ -367,6 +367,10 @@ div.tocify {
 </div>
 
 
+<pre class="r"><code>library(&#39;maps&#39;) 
+library(&#39;ggplot2&#39;) 
+library(&#39;dplyr&#39;)
+library(datasets)</code></pre>
 <div id="assignment-1" class="section level1">
 <h1>Assignment 1</h1>
 <p><strong>Collaborators: w/ Sophia Restaino </strong></p>
@@ -386,8 +390,8 @@ dat.untouched &lt;- dat</code></pre>
 <pre class="r"><code>dat$state &lt;- tolower(rownames(USArrests))</code></pre>
 <p>This dataset has the state names as row names, so we just want to make them into a new variable. We also make them all lower case, because that will help us draw a map later - the map function requires the states to be lower case.</p>
 <p>List the variables contained in the dataset <code>USArrests</code>.</p>
-<pre class="r"><code>colnames(dat)</code></pre>
-<pre><code>## [1] &quot;Murder&quot;   &quot;Assault&quot;  &quot;UrbanPop&quot; &quot;Rape&quot;</code></pre>
+<pre class="r"><code>names(dat)</code></pre>
+<pre><code>## [1] &quot;Murder&quot;   &quot;Assault&quot;  &quot;UrbanPop&quot; &quot;Rape&quot;     &quot;state&quot;</code></pre>
 </div>
 <div id="problem-3" class="section level3">
 <h3>Problem 3</h3>
@@ -413,7 +417,7 @@ dat.untouched &lt;- dat</code></pre>
      ylab = &quot;Frequency&quot;,
      xlim = c(0,20),
      ylim = c(0,15))</code></pre>
-<p><img src="Assignments_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="problem-6" class="section level3">
 <h3>Problem 6</h3>
@@ -438,7 +442,7 @@ dat.untouched &lt;- dat</code></pre>
      ylab = &quot;Frequency&quot;,
      xlim = c(0,350),
      ylim = c(0,12))</code></pre>
-<p><img src="Assignments_files/figure-html/unnamed-chunk-9-1.png" width="480" /></p>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-10-1.png" width="480" /></p>
 <pre class="r"><code>max(dat$Rape)</code></pre>
 <pre><code>## [1] 46</code></pre>
 <pre class="r"><code>hist(dat$Rape,
@@ -447,7 +451,7 @@ dat.untouched &lt;- dat</code></pre>
      ylab = &quot;Frequency&quot;,
      xlim = c(0,50),
      ylim = c(0,12))</code></pre>
-<p><img src="Assignments_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>What does the command par do, in your own words (you can look this up by asking R <code>?par</code>)?</p>
 <pre class="r"><code>?par</code></pre>
 <p>Answer: Par allows you to set graphical parameters. An example of using par can be seen below in which I used par to put graphs together to be seen side by side. You can use it to put, for example, 3 side by side or 3 on top of each other.</p>
@@ -474,22 +478,126 @@ hist(dat$Rape,
      ylab = &quot;Frequency&quot;,
      xlim = c(0,50),
      ylim = c(0,12))</code></pre>
-<p><img src="Assignments_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>Answer: You are able to compare the frequencies of the assaults, murders, and rape all togehter at once. It is an easy way to display the data.</p>
 </div>
 <div id="problem-8" class="section level3">
 <h3>Problem 8</h3>
 <p>In the console below (not in text), type <code>install.packages(&quot;maps&quot;)</code> and press Enter, and then type <code>install.packages(&quot;ggplot2&quot;)</code> and press Enter. This will install the packages so you can load the libraries.</p>
 <p>Run this code:</p>
-<pre class="r"><code>library(&#39;maps&#39;) 
-library(&#39;ggplot2&#39;) 
-
-ggplot(dat,
+<pre class="r"><code>ggplot(dat,
        aes(map_id=state, fill=Murder)) + 
        geom_map(map=map_data(&quot;state&quot;)) + 
        expand_limits(x=map_data(&quot;state&quot;)$long, y=map_data(&quot;state&quot;)$lat)</code></pre>
 <p>What does this code do? Explain what each line is doing.</p>
 <p>Answer: We are making a map with the murder data, plotting the different murder rates across each state. The first line of this code is calling the maps package. The second line calls the ggplot2 package which allows you to make different kinds of graphs, similar to baseR plot functions. So, when making the map, “ggplot” is the function, “dat” is the dataset we are pulling information from, and “aes” is responsible for setting the aesthetics of the map we are making. “fill” is telling R that we want the aesthetics to be filled with the data from the “Murder” column. After this, the “+” tacks on the map that is actually being made, using the “state” data. After this, “expand_limits” helps us put the latitude and longitude ticks on the visualization, behind the map.</p>
+</div>
+</div>
+<div id="assignment-2" class="section level1">
+<h1>Assignment 2</h1>
+<div id="problem-1-load-data" class="section level3">
+<h3>Problem 1: Load Data</h3>
+<p>Read in the data</p>
+<pre class="r"><code>library(dplyr)
+nsduh &lt;- read.csv(&quot;dat.nsduh.small.1.csv&quot;)
+nsduh.untouched &lt;- nsduh
+names(nsduh)</code></pre>
+<pre><code>## [1] &quot;mjage&quot;     &quot;cigage&quot;    &quot;iralcage&quot;  &quot;age2&quot;      &quot;sexatract&quot; &quot;speakengl&quot;
+## [7] &quot;irsex&quot;</code></pre>
+<p>Dimensions of the dataset</p>
+<pre class="r"><code>dim(nsduh)</code></pre>
+<pre><code>## [1] 171   7</code></pre>
+</div>
+<div id="problem-2-variables" class="section level2">
+<h2>Problem 2: Variables</h2>
+<p>Describe the variables in the dataset. What is this dataset about? Who collected the data, what kind of sample is it, and what was the purpose of generating the data?</p>
+<p>This dataset is a survey collecting information on people’s tendency/history of using marijuana, cigarettes, and alcohol. There are also some demographics/personal information collected, such as the respondent’s age, sex, and sexual attraction. This information is all compiled by the National Survey on Drug Use and Health in order to analyze substance use across the nation.</p>
+</div>
+<div id="problem-3-age-and-gender" class="section level2">
+<h2>Problem 3: Age and gender</h2>
+<p>What is the age distribution of the sample like? Make sure you read the codebook to know what the variable values mean. Do you think this age distribution representative of the US population? Why or why not?</p>
+<pre class="r"><code>class(nsduh$age2)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>mean(nsduh$age2)</code></pre>
+<pre><code>## [1] 13.97661</code></pre>
+<pre class="r"><code>median(nsduh$age2)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code>hist(nsduh$age2,
+     main = &quot;Histogram of Ages&quot;,
+     xlab = &quot;Age Buckets&quot;,
+     ylab = &quot;Frequency&quot;,
+     xlim = c(0,20))</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>According to this histogram, along with the information on the value meanings in the codebook, most of the respondents for this survey answered 15. This indicates that they are between 35-49 years old. This survey took people who were at least 12 years old, but compared to the other age buckets, younger people were not as represented. This makes sense, as the data was collected through a survey, so slightly older people were probably more likely to interact with it. I think this is somewhat reflective of the national population, but I would probably want a larger sample size just to be as accurate as possible. A quick google search shows that in 2019, the average age of a person was 38.1 years old. The average age of respondents in this survey was roughly between 26-29 years old. Thus, this information shows that the survey is slightly on the younger side and could use more respondents to be more reflective of the national population.</p>
+<p>Is the sample balanced in terms of gender? If not, are there more females or males?</p>
+<pre class="r"><code>nsduh %&gt;%
+  count(irsex)</code></pre>
+<pre><code>##   irsex  n
+## 1     1 91
+## 2     2 80</code></pre>
+<p>It is decently balanced. There are 91 males and 80 females.</p>
+<p>Use this code to draw a stacked bar plot to view the relationship between sex and age. What can you conclude from this plot?</p>
+<pre class="r"><code>tab.agesex &lt;- table(nsduh$irsex, nsduh$age2)
+min(nsduh$age2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>barplot(tab.agesex,
+        main = &quot;Stacked barchart&quot;,
+        xlab = &quot;Age category&quot;, ylab = &quot;Frequency&quot;,
+        legend.text = rownames(tab.agesex),
+        beside = FALSE) # Stacked bars (default)</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-19-1.png" width="672" /> This barchart allows us to see the gender breakdown per age bucket in the survey. For example, we are able to see that for those who are in the “15” age bucket, the respondents are pretty evenly split between males and females. We are also able to see instances in which the age buckets are heavily dominated by female or male respondents. For the 17 and 18 year olds (buckets 6 nd 7), according to the graph, most respondents also reported that they are male. For the 19 year old respondents (bucket 8), many reported that they are female, rather than males. Overall, most of the age buckets are decently even between female and male respondents.</p>
+</div>
+<div id="problem-4-substance-use" class="section level2">
+<h2>Problem 4: Substance use</h2>
+<p>For which of the three substances included in the dataset (marijuana, alcohol, and cigarettes) do individuals tend to use the substance earlier?</p>
+<pre class="r"><code>sum(min(nsduh$mjage))</code></pre>
+<pre><code>## [1] 7</code></pre>
+<pre class="r"><code>sum(min(nsduh$cigage))</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code>sum(min(nsduh$iralcage))</code></pre>
+<pre><code>## [1] 5</code></pre>
+<p>Individuals tend to use alcohol at an earlier age than compared to when they would use marijuana or cigarettes.</p>
+</div>
+<div id="problem-5-sexual-attraction" class="section level2">
+<h2>Problem 5: Sexual attraction</h2>
+<p>What does the distribution of sexual attraction look like? Is this what you expected?</p>
+<pre class="r"><code>nsduh$sexna &lt;- nsduh$sexatract
+nsduh$sexna[nsduh$sexatract == 85 | nsduh$sexatract == 94 | nsduh$sexatract == 97 |
+            nsduh$sexatract == 98 | nsduh$sexatract == 99] &lt;- NA 
+length(nsduh$sexna[nsduh$sexna == &quot;NA&quot;])</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>hist(nsduh$sexna,
+     main = &quot;Histogram of Sexual Attraction&quot;,
+     xlab = &quot;Age Buckets&quot;,
+     ylab = &quot;Frequency&quot;,
+     xlim = c(1,6))</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-21-1.png" width="672" /> First, I excluded people on the survey who skipped this question, did not answer, didn’t know, or refused this question. I found that in this dataset, this only applied to 3 people, so I felt comfortable excluding them without much harm to the strength of the data. An overwhelming majority of the people who took this survey are straight, as in they are only attracted to people of the opposite sex. The second most popular response was that people are mostly attracted to people of the opposite sex. People who are bi was the next most common answer, followed by people who are mostly attracted to the same sex, and finally people who are only attracted to the same sex. The least common response was people who are not sure. This is what I expected, and I think this data is representative of the greater population.</p>
+<p>What is the distribution of sexual attraction by gender?</p>
+<pre class="r"><code>tab.gensex &lt;- table(nsduh$irsex, nsduh$sexna)
+barplot(tab.gensex,
+        main = &quot;Stacked barchart&quot;,
+        xlab = &quot;Sexual Attraction Category&quot;, ylab = &quot;Frequency&quot;,
+        legend.text = rownames(tab.gensex),
+        beside = FALSE) # Stacked bars (default)</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-22-1.png" width="672" /> Most females and males who took the survey are straight. Women are more likely to report that they are mostly attracted to the opposite sex and are equally attracted to males and females than the other male respondents.</p>
+</div>
+<div id="problem-6-english-speaking" class="section level2">
+<h2>Problem 6: English speaking</h2>
+<p>What does the distribution of English speaking look like in the sample? Is this what you might expect for a random sample of the US population?</p>
+<pre class="r"><code>speakengl &lt;- nsduh$speakengl
+engl.freq &lt;- table(speakengl)
+barplot(engl.freq,
+        ylim = c(0,200))</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-23-1.png" width="672" /> Most of the people who took the survey are able to speak english very well. This is followed by those who said they can speak english well, followed by those who said they can’t speak english very well. This is not surprising as a random sample of the US because most people are able to speak english very well; however, there are people who can speak english, but not as their first language. This might cause their english to not be as strong, so it makes sense that the survey responses are reflective of this factor.</p>
+<p>Are there more English speaker females or males?</p>
+<pre class="r"><code>tab.genengl &lt;- table(nsduh$speakengl, nsduh$irsex)
+barplot(tab.genengl,
+        main = &quot;Stacked barchart&quot;,
+        xlab = &quot;Age category&quot;, ylab = &quot;Frequency&quot;,
+        legend.text = rownames(tab.genengl),
+        beside = FALSE,
+        ylim = c(0,100)) # Stacked bars (default)</code></pre>
+<p><img src="Assignments_files/figure-html/unnamed-chunk-24-1.png" width="672" /> There are more english speaking males. This might be caused by a few factors with one of the more obvious being that more males took the survey than females, so it makes sense that, in looking at pure frequency, they might have more people answer that they can speak english well.</p>
 </div>
 </div>
 

@@ -1,6 +1,12 @@
 ---
 title: "Exams"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 1
 ---
 
 ```{r setup, include=FALSE}

@@ -13,7 +13,6 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
-
 # Exam 1
 
 a. Create a folder in your computer (a good place would be under Crim 250, Exams). 

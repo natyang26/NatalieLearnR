@@ -297,6 +297,124 @@ barplot(tab.genengl,
 ```
 There are more english speaking males. This might be caused by a few factors with one of the more obvious being that more males took the survey than females, so it makes sense that, in looking at pure frequency, they might have more people answer that they can speak english well. 
 
+# Assignment 3
+```{r}
+setwd("~/Desktop/Fall 2021/CRIM 250")
+library(readr)
+library(knitr)
+library(ggplot2)
+dat.crime <- read_delim("crime_simple.txt", delim = "\t")
+```
+
+This is a dataset from a textbook by Brian S. Everitt about crime in the US in 1960. The data originate from the Uniform Crime Report of the FBI and other government sources. The data for 47 states of the USA are given. 
+
+Here is the codebook:
+
+R: Crime rate: # of offenses reported to police per million population
+
+Age: The number of males of age 14-24 per 1000 population
+
+S: Indicator variable for Southern states (0 = No, 1 = Yes)
+
+Ed: Mean of years of schooling x 10 for persons of age 25 or older
+
+Ex0: 1960 per capita expenditure on police by state and local government
+
+Ex1: 1959 per capita expenditure on police by state and local government
+
+LF: Labor force participation rate per 1000 civilian urban males age 14-24
+
+M: The number of males per 1000 females
+
+N: State population size in hundred thousands
+
+NW: The number of non-whites per 1000 population
+
+U1: Unemployment rate of urban males per 1000 of age 14-24
+
+U2: Unemployment rate of urban males per 1000 of age 35-39
+
+W: Median value of transferable goods and assets or family income in tens of $
+
+X: The number of families per 1000 earning below 1/2 the median income
+
+
+We are interested in checking whether the reported crime rate (# of offenses reported to police per million population) and the average education (mean number of years of schooling for persons of age 25 or older) are related. 
+
+
+1. How many observations are there in the dataset? To what does each observation correspond?
+
+```{r}
+dim(dat.crime)
+```
+There are 47 observations in this dataset, and each of the rows represent one of 47 states included in this dataset. 
+
+2. Draw a scatterplot of the two variables. Calculate the correlation between the two variables. Can you come up with an explanation for this relationship?
+
+```{r, fig.width=6, fig.height=4}
+ggplot(dat.crime, aes(x = Ed, y = U2)) + 
+    geom_point() +
+    geom_smooth(method = lm, se=FALSE)
+
+cor(dat.crime$Ed,
+    dat.crime$U2,
+    method = "pearson",
+    use = "complete.obs")
+```
+There is a slight negative correlation between the variables, and when calculating the correlation using the pearson method, it shows that it comes out to -0.22. This makes sense because as education levels increase, then crime rates will likely decrease. As education decreases, then crime rates tend to increase. 
+
+3. Regress reported crime rate (y) on average education (x) and call this linear model `crime.lm` and write the summary of the regression by using this code, which makes it look a little nicer `{r, eval=FALSE} kable(summary(crime.lm)$coef, digits = 2)`.
+
+```{r} 
+crime.lm <- lm(R ~ Ed, data = dat.crime)
+summary(crime.lm)
+```
+
+4. Are the four assumptions of linear regression satisfied? To answer this, draw the relevant plots. (Write a maximum of one sentence per assumption.)
+
+```{r} 
+# Linearity
+x <- dat.crime$Ed
+y <- dat.crime$R
+
+## residuals vs x
+plot(x, y, main = "Relationship between Crime Rate and Education",
+     xlab = "Education", ylab = "Crime Rate",
+     pch = 19, frame = FALSE)
+abline(crime.lm, col = "blue")
+
+## residuals vs fitted
+plot(crime.lm, which=1)
+
+# Normal Population
+## qq plot
+plot(crime.lm, which=2)
+
+# Homoscedasticity
+## scale location plot
+plot(crime.lm, which=3)
+```
+
+Linearity assumption: This is satisfied because the scatterplot abline shows a consistent linear relationship between the variables, and the red line in the residuals vs fitted graph is flat which indicates there is no discernible non-linear trend to the residuals.
+Equal variation assumption (homoscedasticity): Homoscedasticity looks at each point's distance away from the line, and most of the dots are constantly the same distance for their respective points.
+Normal population assumption: The QQ plot shows that most of the points follow the behavior of the line which indicates that this is mostly normal. 
+Independence assumption: Independence assumption is satisfied because there are no patterns in the scatterplot showing the relationship between R and Ed variables. 
+
+5. Is the relationship between reported crime and average education statistically significant? Report the estimated coefficient of the slope, the standard error, and the p-value. What does it mean for the relationship to be statistically significant?
+
+```{r}
+summary(crime.lm)
+```
+Looking at the output from the summary of the regression, we can see that the p-value is less than 0.05 which indicates statistical significance. This means that given the relationship of crime reported and years of education, we fail to reject the null hypothesis with 95% confidence. 
+
+6. How are reported crime and average education related? In other words, for every unit increase in average education, how does reported crime rate change (per million) per state?
+
+This data shows that with every unit increase in education, there is a (positive) 1.116 unit increase in the likeliness that reported crime increases as well. This is surprising given that I would think that with increase in education, there is a decrease in crime, but this is not what the data shows. 
+
+7. Can you conclude that if individuals were to receive more education, then crime will be reported more often? Why or why not?
+
+One cannot draw this conclusion. First, the codebook doesn't draw a differentiation between crime rate and numbers reported. Our regression does not take into account enough factors to draw a strong conclusion on this relationship, and there aren't time series data available for us to look at changes.
+
 # Assignment 4
 
 ```{r}

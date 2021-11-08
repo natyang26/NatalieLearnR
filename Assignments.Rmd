@@ -302,7 +302,7 @@ There are more english speaking males. This might be caused by a few factors wit
 ```{r}
 # 3 Data Visualization
 
-install.packages("tidyverse")
+# install.packages("tidyverse")
 library(tidyverse)
 ## installing and loading the package "tidyverse" from the library
 
@@ -346,8 +346,8 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
 ## points will not be blue because "color" is in the aes
 
-ggplot(data = mpg) 
-+ geom_point(mapping = aes(x = displ, y = hwy))
+# ggplot(data = mpg) 
+# + geom_point(mapping = aes(x = displ, y = hwy))
 ## the "+" needs to be at the end of the line, not at the beginning
 ## important syntax!
 

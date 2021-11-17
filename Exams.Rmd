@@ -168,4 +168,120 @@ summary(shootings$body_camera)
 
 There are missing values in the data we used for problem 4, specifically for the variable looking at victim fleeing. That is most likely not all the data that is missing from this dataset, as it is hard to compile complete information when looking at data like this. Overall, this dataset is pretty complete, and while it is always best practice to try to get as much information as possible, with such a large number of observations, missing data is not always the biggest deal. A lot of the times, you have to work with what you are provided with. 
 
+# Exam 2
 
+a. Create a folder in your computer (a good place would be under Crim 250, Exams). 
+
+b. Download the dataset from the Canvas website (sim.data.csv) onto that folder, and save your Exam 2.Rmd file in the same folder.
+
+c. Data description: This dataset provides (simulated) data about 200 police departments in one year. It contains information about the funding received by the department as well as incidents of police brutality. Suppose this dataset (sim.data.csv) was collected by researchers to answer this question: **"Does having more funding in a police department lead to fewer incidents of police brutality?"**
+
+d. Codebook:
+- funds: How much funding the police department received in that year in millions of dollars.
+- po.brut: How many incidents of police brutality were reported by the department that year.
+- po.dept.code: Police department code
+
+## Problem 1: EDA (10 points) 
+
+Describe the dataset and variables. Perform exploratory data analysis for the two variables of interest: funds and po.brut.
+
+```{r}
+setwd("~/Desktop/Fall 2021/CRIM 250/Crim 250 - Exam 2")
+dat <- read.csv(file = 'sim.data.csv')
+library(datasets)
+library(ggplot2)
+```
+
+```{r}
+dim(dat)
+names(dat)
+```
+There are 200 row observations and 3 columns with data respective to the unique identifying police department code. 
+
+```{r}
+hist(dat$funds)
+summary(dat$funds)
+```
+The histogram shows the distribution of funds across the different police department, with the most common amount of funding falling within the $50-60 million range. The least given to a department was $21.4 million, and then most was $99.7 million. 
+
+```{r}
+hist(dat$po.brut)
+summary(dat$po.brut)
+```
+The histogram shows a distribution regarding the number of police brutality cases reported by the department that year. Most frequently, there were between 15-20 cases reported, although the 20-25 range was close behind that range. The least number of police brutality cases reported in a given year was 0, while the highest number of cases was 29.
+
+## Problem 2: Linear regression (30 points)
+
+a. Perform a simple linear regression to answer the question of interest. To do this, name your linear model "reg.output" and write the summary of the regression by using "summary(reg.output)". 
+
+```{r}
+# Remember to remove eval=FALSE!!
+reg.output <- lm(po.brut ~ funds, data = dat)
+summary(reg.output)
+plot(reg.output)
+```
+Based on this simple linear regression, we can see that there is a negative correlation between funds and police brutality cases reported. To answer the question above, for every 1 unit increase in funding, the likelihood of police brutality decreases by 0.367 units. We cannot conclude that more funding will decrease the number of actual incidents, we can only draw a conclusionship between funding and the number of incidents reported. While it is not a causal relationship, this ultimately means that as funding increases, the likelihood that police brutality cases will be reported decreases. 
+
+b. Report the estimated coefficient, standard error, and p-value of the slope. Is the relationship between funds and incidents statistically significant? Explain.
+
+Based on the summary of the regression output above, the estimated coefficient shows 2 values. The first is the intercept which is 40.54, and the other value shows more about the relationship between the two variables being compared. The value is -0.367 and I explained how this value gives us important information in 2a. The standard error value is 0.9464, and the p value is < 2.2e-16. Because this p value is < 0.05, we can reject the null hypothesis with 95% certainty, and we can say that this relationship is statisticallly significant. 
+
+c. Draw a scatterplot of po.brut (y-axis) and funds (x-axis). Right below your plot command, use abline to draw the fitted regression line, like this:
+```{r, fig.width=4, fig.height=4}
+ggplot(dat, aes(x = funds, y = po.brut)) + 
+    geom_point() +
+    geom_smooth(method = lm, se=FALSE)
+
+cor(dat$funds,
+    dat$po.brut,
+    method = "pearson",
+    use = "complete.obs")
+```
+
+```{r}
+reg.output.nc <- lm(formula = dist ~ speed, data = cars)
+
+plot(dat$funds, dat$po.brut,  main="Relationship between Funding and Police Brutality Reports",
+    xlab="Funds", ylab="Police Brutality Cases Reported")
+abline(reg.output, col="blue")
+```
+Does the line look like a good fit? Why or why not?
+
+This line looks like a decent fit for the data. Given that the R^2 is 0.971, it is almost close to 100%. This value helps us determine whether the model is a good fit for the data. Additionally, the relationship is relatively linear, so that also is a good indication that the line is a good fit. 
+
+d. Are the four assumptions of linear regression satisfied? To answer this, draw the relevant plots. (Write a maximum of one sentence per assumption.) If not, what might you try to do to improve this (if you had more time)?
+
+```{r} 
+# Linearity
+x <- dat$funds
+y <- dat$po.brut
+
+## residuals vs x
+plot(x, y, main = "Relationship between Funds and Police Brutality Reported",
+     xlab = "Funds", ylab = "Police Brutality Reported",
+     pch = 19, frame = FALSE)
+abline(reg.output, col = "blue")
+
+## residuals vs fitted
+plot(reg.output, which=1)
+
+# Normal Population
+## qq plot
+plot(reg.output, which=2)
+## residual vs leverage
+plot(reg.output, which=5)
+
+# Homoscedasticity
+## scale location plot
+plot(reg.output, which=3)
+```
+Linearity assumption: While the scatterplot abline shows a consistent linear relationship between the variables, the red line in the residuals vs fitted graph is not very flat which indicates there is a discernible non-linear trend to the residuals. In this case, we cannot claim that the linearity assumption is satisfied. 
+Equal variation assumption (homoscedasticity): Homoscedasticity looks at each point's distance away from the line, and most of the dots are constantly the same distance for their respective points.
+Normal population assumption: There is a little bit of a left skew on this normal qq plot, but overall the distribution looks fine. 
+Independence assumption: It is impossible to truly test this assumption visually, and there's no time series data available. Because there is a pattern in the scatterplot, this might not pass the independence assumption. 
+
+## Problem 3: Data ethics (10 points)
+
+Describe the dataset. Considering our lecture on data ethics, what concerns do you have about the dataset? Once you perform your analysis to answer the question of interest using this dataset, what concerns might you have about the results?
+
+This dataset looks at the funding of 200 different police department's funding, with their respective annual number regarding police brutality cases reported. I am concerned about the actual data in the dataset, given that the number of police brutality cases might not actually be accurately reported. There are many selfish/protective incentives, on the police department's side, to not report the number of police brutality cases. It would be helpful to have time series data in order to look at different trends over the years, as it is hard to draw longer-term conclusions and see patterns with only one year of data. If anyone were to use this model/analyses for future reference, I would caution them to ensure that biased data does not continue to reinforce any biases. It would be helpful to have more factors/more data in this dataset to add to the regression because I am positive that the amount of funding is not the only influence on the likelihood of whether police brutality cases are reported.

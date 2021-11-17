@@ -518,6 +518,129 @@ head(mydates)
 <p>There are missing values in the data we used for problem 4, specifically for the variable looking at victim fleeing. That is most likely not all the data that is missing from this dataset, as it is hard to compile complete information when looking at data like this. Overall, this dataset is pretty complete, and while it is always best practice to try to get as much information as possible, with such a large number of observations, missing data is not always the biggest deal. A lot of the times, you have to work with what you are provided with.</p>
 </div>
 </div>
+<div id="exam-2" class="section level1">
+<h1>Exam 2</h1>
+<ol style="list-style-type: lower-alpha">
+<li><p>Create a folder in your computer (a good place would be under Crim 250, Exams).</p></li>
+<li><p>Download the dataset from the Canvas website (sim.data.csv) onto that folder, and save your Exam 2.Rmd file in the same folder.</p></li>
+<li><p>Data description: This dataset provides (simulated) data about 200 police departments in one year. It contains information about the funding received by the department as well as incidents of police brutality. Suppose this dataset (sim.data.csv) was collected by researchers to answer this question: <strong>“Does having more funding in a police department lead to fewer incidents of police brutality?”</strong></p></li>
+<li>Codebook:</li>
+</ol>
+<ul>
+<li>funds: How much funding the police department received in that year in millions of dollars.</li>
+<li>po.brut: How many incidents of police brutality were reported by the department that year.</li>
+<li>po.dept.code: Police department code</li>
+</ul>
+<div id="problem-1-eda-10-points" class="section level2">
+<h2>Problem 1: EDA (10 points)</h2>
+<p>Describe the dataset and variables. Perform exploratory data analysis for the two variables of interest: funds and po.brut.</p>
+<pre class="r"><code>setwd(&quot;~/Desktop/Fall 2021/CRIM 250/Crim 250 - Exam 2&quot;)
+dat &lt;- read.csv(file = &#39;sim.data.csv&#39;)
+library(datasets)
+library(ggplot2)</code></pre>
+<pre class="r"><code>dim(dat)</code></pre>
+<pre><code>## [1] 200   3</code></pre>
+<pre class="r"><code>names(dat)</code></pre>
+<pre><code>## [1] &quot;po.dept.code&quot; &quot;funds&quot;        &quot;po.brut&quot;</code></pre>
+<p>There are 200 row observations and 3 columns with data respective to the unique identifying police department code.</p>
+<pre class="r"><code>hist(dat$funds)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>summary(dat$funds)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   21.40   51.67   59.75   61.04   72.17   99.70</code></pre>
+<p>The histogram shows the distribution of funds across the different police department, with the most common amount of funding falling within the $50-60 million range. The least given to a department was $21.4 million, and then most was $99.7 million.</p>
+<pre class="r"><code>hist(dat$po.brut)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>summary(dat$po.brut)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   14.00   19.00   18.14   22.00   29.00</code></pre>
+<p>The histogram shows a distribution regarding the number of police brutality cases reported by the department that year. Most frequently, there were between 15-20 cases reported, although the 20-25 range was close behind that range. The least number of police brutality cases reported in a given year was 0, while the highest number of cases was 29.</p>
+</div>
+<div id="problem-2-linear-regression-30-points" class="section level2">
+<h2>Problem 2: Linear regression (30 points)</h2>
+<ol style="list-style-type: lower-alpha">
+<li>Perform a simple linear regression to answer the question of interest. To do this, name your linear model “reg.output” and write the summary of the regression by using “summary(reg.output)”.</li>
+</ol>
+<pre class="r"><code># Remember to remove eval=FALSE!!
+reg.output &lt;- lm(po.brut ~ funds, data = dat)
+summary(reg.output)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = po.brut ~ funds, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9433 -0.2233  0.2544  0.5952  1.1803 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 40.543069   0.282503  143.51   &lt;2e-16 ***
+## funds       -0.367099   0.004496  -81.64   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9464 on 198 degrees of freedom
+## Multiple R-squared:  0.9712, Adjusted R-squared:  0.971 
+## F-statistic:  6666 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(reg.output)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-18-1.png" width="672" /><img src="Exams_files/figure-html/unnamed-chunk-18-2.png" width="672" /><img src="Exams_files/figure-html/unnamed-chunk-18-3.png" width="672" /><img src="Exams_files/figure-html/unnamed-chunk-18-4.png" width="672" /> Based on this simple linear regression, we can see that there is a negative correlation between funds and police brutality cases reported. To answer the question above, for every 1 unit increase in funding, the likelihood of police brutality decreases by 0.367 units. We cannot conclude that more funding will decrease the number of actual incidents, we can only draw a conclusionship between funding and the number of incidents reported. While it is not a causal relationship, this ultimately means that as funding increases, the likelihood that police brutality cases will be reported decreases.</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Report the estimated coefficient, standard error, and p-value of the slope. Is the relationship between funds and incidents statistically significant? Explain.</li>
+</ol>
+<p>Based on the summary of the regression output above, the estimated coefficient shows 2 values. The first is the intercept which is 40.54, and the other value shows more about the relationship between the two variables being compared. The value is -0.367 and I explained how this value gives us important information in 2a. The standard error value is 0.9464, and the p value is &lt; 2.2e-16. Because this p value is &lt; 0.05, we can reject the null hypothesis with 95% certainty, and we can say that this relationship is statisticallly significant.</p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Draw a scatterplot of po.brut (y-axis) and funds (x-axis). Right below your plot command, use abline to draw the fitted regression line, like this:</li>
+</ol>
+<pre class="r"><code>ggplot(dat, aes(x = funds, y = po.brut)) + 
+    geom_point() +
+    geom_smooth(method = lm, se=FALSE)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-19-1.png" width="384" /></p>
+<pre class="r"><code>cor(dat$funds,
+    dat$po.brut,
+    method = &quot;pearson&quot;,
+    use = &quot;complete.obs&quot;)</code></pre>
+<pre><code>## [1] -0.9854706</code></pre>
+<pre class="r"><code>reg.output.nc &lt;- lm(formula = dist ~ speed, data = cars)
+
+plot(dat$funds, dat$po.brut,  main=&quot;Relationship between Funding and Police Brutality Reports&quot;,
+    xlab=&quot;Funds&quot;, ylab=&quot;Police Brutality Cases Reported&quot;)
+abline(reg.output, col=&quot;blue&quot;)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-20-1.png" width="672" /> Does the line look like a good fit? Why or why not?</p>
+<p>This line looks like a decent fit for the data. Given that the R^2 is 0.971, it is almost close to 100%. This value helps us determine whether the model is a good fit for the data. Additionally, the relationship is relatively linear, so that also is a good indication that the line is a good fit.</p>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Are the four assumptions of linear regression satisfied? To answer this, draw the relevant plots. (Write a maximum of one sentence per assumption.) If not, what might you try to do to improve this (if you had more time)?</li>
+</ol>
+<pre class="r"><code># Linearity
+x &lt;- dat$funds
+y &lt;- dat$po.brut
+
+## residuals vs x
+plot(x, y, main = &quot;Relationship between Funds and Police Brutality Reported&quot;,
+     xlab = &quot;Funds&quot;, ylab = &quot;Police Brutality Reported&quot;,
+     pch = 19, frame = FALSE)
+abline(reg.output, col = &quot;blue&quot;)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>## residuals vs fitted
+plot(reg.output, which=1)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
+<pre class="r"><code># Normal Population
+## qq plot
+plot(reg.output, which=2)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-21-3.png" width="672" /></p>
+<pre class="r"><code>## residual vs leverage
+plot(reg.output, which=5)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-21-4.png" width="672" /></p>
+<pre class="r"><code># Homoscedasticity
+## scale location plot
+plot(reg.output, which=3)</code></pre>
+<p><img src="Exams_files/figure-html/unnamed-chunk-21-5.png" width="672" /> Linearity assumption: While the scatterplot abline shows a consistent linear relationship between the variables, the red line in the residuals vs fitted graph is not very flat which indicates there is a discernible non-linear trend to the residuals. In this case, we cannot claim that the linearity assumption is satisfied. Equal variation assumption (homoscedasticity): Homoscedasticity looks at each point’s distance away from the line, and most of the dots are constantly the same distance for their respective points. Normal population assumption: There is a little bit of a left skew on this normal qq plot, but overall the distribution looks fine. Independence assumption: It is impossible to truly test this assumption visually, and there’s no time series data available. Because there is a pattern in the scatterplot, this might not pass the independence assumption.</p>
+</div>
+<div id="problem-3-data-ethics-10-points" class="section level2">
+<h2>Problem 3: Data ethics (10 points)</h2>
+<p>Describe the dataset. Considering our lecture on data ethics, what concerns do you have about the dataset? Once you perform your analysis to answer the question of interest using this dataset, what concerns might you have about the results?</p>
+<p>This dataset looks at the funding of 200 different police department’s funding, with their respective annual number regarding police brutality cases reported. I am concerned about the actual data in the dataset, given that the number of police brutality cases might not actually be accurately reported. There are many selfish/protective incentives, on the police department’s side, to not report the number of police brutality cases. It would be helpful to have time series data in order to look at different trends over the years, as it is hard to draw longer-term conclusions and see patterns with only one year of data. If anyone were to use this model/analyses for future reference, I would caution them to ensure that biased data does not continue to reinforce any biases. It would be helpful to have more factors/more data in this dataset to add to the regression because I am positive that the amount of funding is not the only influence on the likelihood of whether police brutality cases are reported.</p>
+</div>
+</div>
 
 
 
